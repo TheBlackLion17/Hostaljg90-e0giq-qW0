@@ -1,0 +1,39 @@
+<?php
+// Replace with your database connection code
+$host = "AKKUABHIJITH";
+$dbname = "hostial_management";
+$username = "root@localhost";
+$password = "Abhijith@20";
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error: " . $e->getMessage());
+}
+
+// Handle user login
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    // Replace with your user validation logic
+    $query = "SELECT * FROM users WHERE username = :username AND password = :password";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(":username", $username);
+    $stmt->bindParam(":password", $password);
+    $stmt->execute();
+    $user = $stmt->fetch();
+
+    if ($user) {
+        // Authentication successful, set a session or cookie and redirect
+        session_start();
+        $_SESSION["user_id"] = $user["id"];
+        header("Location: dashboard.php"); // Redirect to the dashboard
+        exit();
+    } else {
+        // Authentication failed, display an error message
+        echo "Invalid username or password.";
+    }
+}
+?>
